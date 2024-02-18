@@ -1,12 +1,17 @@
 <script lang="ts">
-	import { type Snippet } from "svelte";
-	import "../app.css";
+	import "../app.pcss";
+	import type { PropsWithChildren } from "../types";
+	import { ModeWatcher } from "mode-watcher";
 
-	let { children } = $props<{ children: Snippet }>();
+	let { children } = $props<PropsWithChildren>();
 </script>
 
-<div class="flex min-h-screen min-w-full flex-1 bg-slate-100">
+<ModeWatcher />
+
+<div class="flex min-h-screen min-w-full flex-1 bg-background">
 	<div class="container mx-auto p-4 md:p-6">
-		{@render children()}
+		{#if children}
+			{@render children()}
+		{/if}
 	</div>
 </div>
