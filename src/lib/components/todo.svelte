@@ -1,17 +1,16 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
 	import { cn } from "$lib/utils.js";
-	import { Button } from "$lib/components/ui/button/index.js";
+	import { Button } from "$lib/components/ui/button";
 	import { Trash2, CheckSquare, Square } from "lucide-svelte";
 
 	type Props = {
 		id: number;
 		completed: boolean;
-		index: number;
 		text: string;
 	};
 
-	const { id, completed, index, text } = $props<Props>();
+	const { id, completed, text } = $props<Props>();
 </script>
 
 <li class="flex rounded border px-3 py-2">
@@ -25,7 +24,6 @@
 		<input
 			type="checkbox"
 			checked={completed}
-			id={`todo-${index}`}
 			name="completed"
 			class="sr-only"
 			readonly

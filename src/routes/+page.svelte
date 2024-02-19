@@ -34,8 +34,8 @@
 		<section class="flex flex-col">
 			{#if !!data.todos.length}
 				<ul class="space-y-2">
-					{#each data.todos as todo, index}
-						<Todo {...todo} {index} />
+					{#each data.todos as todo}
+						<Todo {...todo} />
 					{/each}
 				</ul>
 			{:else}
