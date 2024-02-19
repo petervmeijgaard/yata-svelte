@@ -20,9 +20,9 @@
 		loader.start();
 
 		return async ({ update }) => {
-			loader.stop();
-
 			await update();
+
+			loader.stop();
 		};
 	};
 </script>
