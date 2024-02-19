@@ -39,7 +39,7 @@
 			type="checkbox"
 			checked={completed}
 			name="completed"
-			class="sr-only"
+			class="hidden"
 			readonly
 		/>
 		<button
@@ -48,6 +48,7 @@
 				"flex flex-1 cursor-pointer items-center gap-2",
 				completed && "text-muted-foreground line-through",
 			)}
+			title="Toggle completed status"
 			disabled={loader.isLoading}
 		>
 			{#if completed}
@@ -60,7 +61,7 @@
 	</form>
 	<form method="POST" action="/?/removeTodo" use:enhance={submitForm}>
 		<input type="hidden" name="id" value={id} />
-		<Button type="submit" disabled={loader.isLoading}>
+		<Button type="submit" disabled={loader.isLoading} title="Delete todo">
 			<Trash2 class="h-4 w-4" />
 		</Button>
 	</form>
