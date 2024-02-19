@@ -1,26 +1,17 @@
 <script lang="ts">
-	import { Button } from "@/components/ui/button";
-	import * as Card from "@/components/ui/card";
-	import { Checkbox } from "@/components/ui/checkbox";
-	import { Input } from "@/components/ui/input";
-	import { Label } from "@/components/ui/label";
-	import { useTodos } from "$lib/useTodos.svelte";
-	import { cn } from "$lib/utils";
-	import { Trash2 } from "lucide-svelte";
+	import { Button } from "$lib/components/ui/button";
+	import { enhance } from "$app/forms";
 
-	const { todos, addTodo, removeTodo, toggleTodo } = useTodos();
+	import * as Card from "$lib/components/ui/card";
+	import { Input } from "$lib/components/ui/input";
+	import { default as Todo } from "$lib/components/todo.svelte";
+	import type { PageData } from "./$types";
 
-	let input = $state("");
+	type Props = {
+		data: PageData;
+	};
 
-	function onSubmit(event: SubmitEvent) {
-		event.preventDefault();
-
-		if (!input) return;
-
-		addTodo(input);
-
-		input = "";
-	}
+	const { data } = $props<Props>();
 </script>
 
 <svelte:head>
@@ -34,42 +25,22 @@
 		<Card.Description>Yet Another Todo Application</Card.Description>
 	</Card.Header>
 	<Card.Content class="space-y-4">
-		<form on:submit={onSubmit}>
+		<form method="POST" action="/?/addTodo" use:enhance>
 			<div class="flex flex-row items-center gap-2">
-				<Input type="text" placeholder="Enter a new todo" bind:value={input} />
+				<Input type="text" placeholder="Enter a new todo" name="todo" />
 				<Button size="sm" type="submit">Add todo</Button>
 			</div>
 		</form>
 		<section class="flex flex-col">
-			{#if !!todos.length}
+			{#if !!data.todos.length}
 				<ul class="space-y-2">
-					{#each todos as todo, index}
-						<li
-							class="flex flex-row items-center gap-2 rounded border px-3 py-2"
-						>
-							<Checkbox
-								on:click={() => toggleTodo(index)}
-								checked={todo.completed}
-								id={`todo-${index}`}
-							/>
-							<Label
-								class={cn(
-									"flex flex-1 gap-2",
-									todo.completed && "text-muted-foreground line-through",
-								)}
-								for={`todo-${index}`}
-							>
-								{todo.text}
-							</Label>
-							<Button on:click={() => removeTodo(index)}>
-								<Trash2 class="h-4 w-4" />
-							</Button>
-						</li>
+					{#each data.todos as todo, index}
+						<Todo {...todo} {index} />
 					{/each}
 				</ul>
 			{:else}
 				<span
-					class="text-muted-foreground flex rounded-md border border-dashed px-3 py-2 text-sm"
+					class="flex rounded-md border border-dashed px-3 py-2 text-sm text-muted-foreground"
 				>
 					No todos yet...
 				</span>
