@@ -1,30 +1,38 @@
 <script lang="ts">
-	import type { SubmitFunction } from "@sveltejs/kit";
-	import { enhance } from "$app/forms";
 	import { cn } from "$lib/utils.js";
 	import { Button } from "$lib/components/ui/button";
 	import { Trash2, CheckSquare, Square, Loader2 } from "lucide-svelte";
 	import { useLoader } from "$lib/hooks/useLoader.svelte";
+	import { default as Form } from "./form.svelte";
+	import { removeTodoSchema, toggleTodoSchema } from "$lib/schemas";
+	import {
+		type Infer,
+		superForm,
+		type SuperValidated,
+	} from "sveltekit-superforms";
 
 	type Props = {
 		id: number;
 		completed: boolean;
 		text: string;
+		toggleTodoForm: SuperValidated<Infer<typeof toggleTodoSchema>>;
+		removeTodoForm: SuperValidated<Infer<typeof removeTodoSchema>>;
 	};
 
-	const { id, completed, text } = $props<Props>();
+	const { id, completed, text, toggleTodoForm, removeTodoForm } =
+		$props<Props>();
 
 	const loader = useLoader();
 
-	const submitForm: SubmitFunction = () => {
-		loader.start();
+	const { enhance: toggleTodoEnhance } = superForm(toggleTodoForm, {
+		onSubmit: () => loader.start(),
+		onResult: () => loader.stop(),
+	});
 
-		return async ({ update }) => {
-			await update();
-
-			loader.stop();
-		};
-	};
+	const { enhance: removeTodoEnhance } = superForm(removeTodoForm, {
+		onSubmit: () => loader.start(),
+		onResult: () => loader.stop(),
+	});
 </script>
 
 <li class="relative flex rounded border px-3 py-2">
@@ -32,7 +40,7 @@
 		class="flex flex-1 flex-row items-center gap-2"
 		method="POST"
 		action="/?/toggleTodo"
-		use:enhance={submitForm}
+		use:toggleTodoEnhance
 	>
 		<input type="hidden" name="id" value={id} />
 		<input
@@ -59,7 +67,16 @@
 			<span>{text}</span>
 		</button>
 	</form>
-	<form method="POST" action="/?/removeTodo" use:enhance={submitForm}>
+	<Form
+		method="POST"
+		action="/?/removeTodo"
+		data={removeTodoForm}
+		let:form
+		let:message
+	>
+		<pre>{JSON.stringify({ form, message })}</pre>
+	</Form>
+	<form method="POST" action="/?/removeTodo" use:removeTodoEnhance>
 		<input type="hidden" name="id" value={id} />
 		<Button type="submit" disabled={loader.isLoading} title="Delete todo">
 			<Trash2 class="h-4 w-4" />
