@@ -4,6 +4,7 @@
 	import { cn } from "$lib/utils.js";
 	import { Button } from "$lib/components/ui/button";
 	import { Trash2, CheckSquare, Square, Loader2 } from "lucide-svelte";
+	import { useLoader } from "$lib/hooks/useLoader.svelte";
 
 	type Props = {
 		id: number;
@@ -13,13 +14,13 @@
 
 	const { id, completed, text } = $props<Props>();
 
-	let loading = $state(false);
+	const loader = useLoader();
 
 	const submitForm: SubmitFunction = () => {
-		loading = true;
+		loader.start();
 
 		return async ({ update }) => {
-			loading = false;
+			loader.stop();
 
 			await update();
 		};
@@ -47,7 +48,7 @@
 				"flex flex-1 cursor-pointer items-center gap-2",
 				completed && "text-muted-foreground line-through",
 			)}
-			disabled={loading}
+			disabled={loader.isLoading}
 		>
 			{#if completed}
 				<CheckSquare />
@@ -59,11 +60,11 @@
 	</form>
 	<form method="POST" action="/?/removeTodo" use:enhance={submitForm}>
 		<input type="hidden" name="id" value={id} />
-		<Button type="submit" disabled={loading}>
+		<Button type="submit" disabled={loader.isLoading}>
 			<Trash2 class="h-4 w-4" />
 		</Button>
 	</form>
-	{#if loading}
+	{#if loader.isLoading}
 		<div
 			class="absolute inset-0 flex flex-1 items-center justify-center backdrop-blur-sm"
 		>
